@@ -22,6 +22,18 @@ var __spreadValues = (a, b) => {
 };
 var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
 var __markAsModule = (target) => __defProp(target, "__esModule", { value: true });
+var __objRest = (source, exclude) => {
+  var target = {};
+  for (var prop in source)
+    if (__hasOwnProp.call(source, prop) && exclude.indexOf(prop) < 0)
+      target[prop] = source[prop];
+  if (source != null && __getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(source)) {
+      if (exclude.indexOf(prop) < 0 && __propIsEnum.call(source, prop))
+        target[prop] = source[prop];
+    }
+  return target;
+};
 var __export = (target, all) => {
   __markAsModule(target);
   for (var name in all)
@@ -68,7 +80,7 @@ function handleRequest(request, responseStatusCode, responseHeaders, remixContex
   });
 }
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/root.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/root.tsx
 var root_exports = {};
 __export(root_exports, {
   CatchBoundary: () => CatchBoundary,
@@ -420,7 +432,7 @@ function getPrimaryMenu(menus) {
 
 // app/lib/utils/jsonLd.ts
 function jsonLdWebsite(data) {
-  const { domain, description, siteTitle } = data;
+  const { domain, description, siteTitle } = data || {};
   return `{
     '@context': 'https://schema.org',
     '@graph': [{
@@ -530,19 +542,19 @@ function jsonBreadcrumbsList({ breadcrumbList }) {
   }`;
 }
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/root.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/root.tsx
 var import_nprogress = __toModule(require("nprogress"));
 
 // node_modules/nprogress/nprogress.css
 var nprogress_default = "/build/_assets/nprogress-JFUSETFZ.css";
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/root.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/root.tsx
 var import_remix4 = __toModule(require("remix"));
 
 // app/styles/app.css
-var app_default = "/build/_assets/app-2NLS4PCN.css";
+var app_default = "/build/_assets/app-QT6ZQV7Q.css";
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/root.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/root.tsx
 var links = () => {
   return [
     { rel: "stylesheet", href: app_default },
@@ -560,14 +572,14 @@ var loader = async () => {
   let metadata2 = getWPMetadata("http://localhost:3000");
   return __spreadProps(__spreadValues({}, getWPMenu()), {
     metadata: metadata2,
-    ENV: {
+    ENV: JSON.stringify({
       APP_ROOT_URL: "http://localhost:3000",
       PUBLIC_WP_API_URL: "https://etheadless.wpengine.com/graphql/"
-    }
+    })
   });
 };
 function App() {
-  let { menus, metadata: metadata2 } = (0, import_remix2.useLoaderData)();
+  let _a = (0, import_remix2.useLoaderData)(), { menus, metadata: metadata2 } = _a, rest = __objRest(_a, ["menus", "metadata"]);
   let transition = (0, import_remix4.useTransition)();
   React2.useEffect(() => {
     if (transition.state === "idle")
@@ -580,11 +592,12 @@ function App() {
       menu: menus,
       metadata: metadata2
     }
-  }, /* @__PURE__ */ React2.createElement(Document, null, /* @__PURE__ */ React2.createElement(import_remix2.Outlet, null)));
+  }, /* @__PURE__ */ React2.createElement(Document, {
+    data: rest
+  }, /* @__PURE__ */ React2.createElement(import_remix2.Outlet, null)));
 }
-var JsonLd = () => {
+var JsonLd = (metadata2) => {
   var _a, _b, _c, _d, _e;
-  let { metadata: metadata2 } = (0, import_remix2.useLoaderData)();
   let matches = (0, import_remix2.useMatches)();
   let location = (0, import_remix2.useLocation)();
   let selectedMatch = matches.find((match) => {
@@ -633,10 +646,12 @@ var JsonLd = () => {
     dangerouslySetInnerHTML: { __html: jsonLdWebsite(metadata2) }
   }), /* @__PURE__ */ React2.createElement("script", {
     type: "application/ld+json",
-    dangerouslySetInnerHTML: { __html: jsonldImageObject({
-      pageUrl: location.pathname,
-      image
-    }) }
+    dangerouslySetInnerHTML: {
+      __html: jsonldImageObject({
+        pageUrl: location.pathname,
+        image
+      })
+    }
   }), /* @__PURE__ */ React2.createElement("script", {
     type: "application/ld+json",
     dangerouslySetInnerHTML: { __html: jsonldWebpage(jsonWebpageSettings) }
@@ -645,10 +660,12 @@ var JsonLd = () => {
     dangerouslySetInnerHTML: { __html: jsonldPerson(metadata2) }
   }), /* @__PURE__ */ React2.createElement("script", {
     type: "application/ld+json",
-    dangerouslySetInnerHTML: { __html: jsonBreadcrumbsList({
-      domain: metadata2.domain,
-      breadcrumbList
-    }) }
+    dangerouslySetInnerHTML: {
+      __html: jsonBreadcrumbsList({
+        domain: metadata2.domain,
+        breadcrumbList
+      })
+    }
   }), post && /* @__PURE__ */ React2.createElement("script", {
     type: "application/ld+json",
     dangerouslySetInnerHTML: {
@@ -673,9 +690,9 @@ var meta = () => {
 };
 function Document({
   children,
-  title
+  title,
+  data
 }) {
-  let data = (0, import_remix2.useLoaderData)();
   return /* @__PURE__ */ React2.createElement("html", {
     lang: "en"
   }, /* @__PURE__ */ React2.createElement("head", null, /* @__PURE__ */ React2.createElement("meta", {
@@ -707,9 +724,9 @@ function Document({
     as: "font",
     type: "font/woff2",
     crossOrigin: "anonymous"
-  }), /* @__PURE__ */ React2.createElement(import_remix2.Meta, null), /* @__PURE__ */ React2.createElement(import_remix2.Links, null), /* @__PURE__ */ React2.createElement(JsonLd, null)), /* @__PURE__ */ React2.createElement("body", null, children, /* @__PURE__ */ React2.createElement(RouteChangeAnnouncement, null), /* @__PURE__ */ React2.createElement(import_remix2.ScrollRestoration, null), /* @__PURE__ */ React2.createElement(import_remix2.Scripts, null), data.ENV && /* @__PURE__ */ React2.createElement("script", {
+  }), /* @__PURE__ */ React2.createElement(import_remix2.Meta, null), /* @__PURE__ */ React2.createElement(import_remix2.Links, null), /* @__PURE__ */ React2.createElement(JsonLd, null)), /* @__PURE__ */ React2.createElement("body", null, children, /* @__PURE__ */ React2.createElement(RouteChangeAnnouncement, null), /* @__PURE__ */ React2.createElement(import_remix2.ScrollRestoration, null), /* @__PURE__ */ React2.createElement(import_remix2.Scripts, null), !!(data == null ? void 0 : data.ENV) && /* @__PURE__ */ React2.createElement("script", {
     dangerouslySetInnerHTML: {
-      __html: `window.ENV = ${JSON.stringify(data.ENV)}`
+      __html: `window.process = {env: ${data.ENV}};`
     }
   }), process.env.NODE_ENV === "development" && /* @__PURE__ */ React2.createElement(import_remix2.LiveReload, null)));
 }
@@ -727,7 +744,10 @@ var PrimaryNav = () => {
     }, menuItem.label));
   })));
 };
-function Layout({ children, alternateNav }) {
+function Layout({
+  children,
+  alternateNav
+}) {
   return /* @__PURE__ */ React2.createElement("div", {
     className: "remix-app"
   }, /* @__PURE__ */ React2.createElement("header", {
@@ -835,7 +855,7 @@ var RouteChangeAnnouncement = React2.memo(() => {
   }, innerHtml);
 });
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/resource-library/members.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/resource-library/members.tsx
 var members_exports = {};
 __export(members_exports, {
   default: () => members_default
@@ -845,7 +865,7 @@ var ResourceLibraryMembers = () => {
 };
 var members_default = ResourceLibraryMembers;
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/resource-library/index.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/resource-library/index.tsx
 var resource_library_exports = {};
 __export(resource_library_exports, {
   action: () => action,
@@ -874,7 +894,10 @@ var PrimaryNav2 = () => {
     }, menuItem.label));
   })));
 };
-function Layout2({ children, alternateNav }) {
+function Layout2({
+  children,
+  alternateNav
+}) {
   return /* @__PURE__ */ React3.createElement("div", {
     className: "remix-app"
   }, /* @__PURE__ */ React3.createElement("header", {
@@ -959,7 +982,7 @@ var RouteChangeAnnouncement2 = React3.memo(() => {
   }, innerHtml);
 });
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/resource-library/index.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/resource-library/index.tsx
 var loader2 = async ({ params }) => {
   const page = {
     title: "Resource Library",
@@ -1024,7 +1047,7 @@ var ResourceLibrarySignUp = () => {
 };
 var resource_library_default = ResourceLibrarySignUp;
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/blog/preview/$id.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/blog/preview/$id.tsx
 var id_exports = {};
 __export(id_exports, {
   default: () => id_default,
@@ -1037,15 +1060,10 @@ var import_lodash = __toModule(require("lodash"));
 var import_remix8 = __toModule(require("remix"));
 
 // app/lib/api/fetch.ts
-var api_url = "https://etheadless.wpengine.com/graphql/";
+var api_url = "/api/graphql";
 async function fetchAPI(query3, { variables } = {}) {
-  const https = require("https");
-  const agent = new https.Agent({
-    rejectUnauthorized: false
-  });
   const res = await fetch(api_url, {
     method: "POST",
-    agent,
     headers: {
       "Content-Type": "application/json"
     },
@@ -1089,7 +1107,10 @@ async function logUserInClient(user) {
     })
   });
 }
-async function getPreviewPostPageServer({ previewType, id }) {
+async function getPreviewPostPageServer({
+  previewType,
+  id
+}) {
   console.log("getPreviewPostPageServer", previewType);
   console.log("getPreviewPostPageServer id", id);
   const https = require("https");
@@ -1265,7 +1286,7 @@ var previewLoaderRouteHandler = async (request, params) => {
   }
 };
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/blog/preview/$id.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/blog/preview/$id.tsx
 var loader3 = async ({ request, params, context }) => previewLoaderRouteHandler(request, params);
 var PostPreview = () => {
   const data = (0, import_remix9.useLoaderData)();
@@ -1274,7 +1295,7 @@ var PostPreview = () => {
 };
 var id_default = PostPreview;
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/page/preview/$id.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/page/preview/$id.tsx
 var id_exports2 = {};
 __export(id_exports2, {
   default: () => id_default2,
@@ -1289,7 +1310,7 @@ var PostPreview2 = () => {
 };
 var id_default2 = PostPreview2;
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/courses/index.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/courses/index.tsx
 var courses_exports = {};
 __export(courses_exports, {
   default: () => courses_default
@@ -1299,7 +1320,7 @@ var Courses = () => {
 };
 var courses_default = Courses;
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/demos/actions.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/demos/actions.tsx
 var actions_exports = {};
 __export(actions_exports, {
   action: () => action2,
@@ -1348,7 +1369,7 @@ function ActionsDemo() {
   }, /* @__PURE__ */ React.createElement("code", null, "useActionData"))))));
 }
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/demos/correct.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/demos/correct.tsx
 var correct_exports = {};
 __export(correct_exports, {
   default: () => NiceWork
@@ -1357,7 +1378,7 @@ function NiceWork() {
   return /* @__PURE__ */ React.createElement("h1", null, "You got it right!");
 }
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/demos/params.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/demos/params.tsx
 var params_exports = {};
 __export(params_exports, {
   default: () => Boundaries,
@@ -1385,7 +1406,7 @@ function Boundaries() {
   }, "This one will throw an error")))));
 }
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/demos/params/index.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/demos/params/index.tsx
 var params_exports2 = {};
 __export(params_exports2, {
   default: () => Boundaries2
@@ -1396,7 +1417,7 @@ function Boundaries2() {
   }, "client errors"), ")"), /* @__PURE__ */ React.createElement("p", null, "Loaders and Actions can throw a ", /* @__PURE__ */ React.createElement("code", null, "Response"), " instead of an error and Remix will render the CatchBoundary instead of the component. This is great when loading data from a database isn't found. As soon as you know you can't render the component normally, throw a 404 response and send your app into the catch boundary. Just like error boundaries, catch boundaries bubble, too."));
 }
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/demos/params/$id.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/demos/params/$id.tsx
 var id_exports3 = {};
 __export(id_exports3, {
   CatchBoundary: () => CatchBoundary2,
@@ -1446,7 +1467,23 @@ var meta4 = ({ data }) => {
   };
 };
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/api/wpLogin.ts
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/api/graphql.ts
+var graphql_exports = {};
+__export(graphql_exports, {
+  action: () => action3
+});
+var api_url2 = "https://etheadless.wpengine.com/graphql/";
+var action3 = ({ request }) => {
+  return fetch(api_url2, {
+    method: "post",
+    body: request.body,
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+};
+
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/api/wpLogin.ts
 var wpLogin_exports = {};
 __export(wpLogin_exports, {
   loader: () => loader6
@@ -1456,7 +1493,7 @@ var loader6 = async ({ request }) => {
   return (0, import_remix14.redirect)("https://etheadless.local/wp-admin");
 };
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/demos/about.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/demos/about.tsx
 var about_exports = {};
 __export(about_exports, {
   default: () => Index,
@@ -1468,7 +1505,7 @@ var import_remix15 = __toModule(require("remix"));
 // app/styles/demos/about.css
 var about_default = "/build/_assets/about-GGM5BPB3.css";
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/demos/about.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/demos/about.tsx
 var meta5 = () => {
   return {
     title: "About Remix"
@@ -1487,7 +1524,7 @@ function Index() {
   }, "read all about nested routes in the docs"), "."), /* @__PURE__ */ React.createElement("hr", null), /* @__PURE__ */ React.createElement(import_remix15.Outlet, null)));
 }
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/demos/about/index.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/demos/about/index.tsx
 var about_exports2 = {};
 __export(about_exports2, {
   default: () => AboutIndex
@@ -1499,7 +1536,7 @@ function AboutIndex() {
   }, "Check out one of them here."))));
 }
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/demos/about/whoa.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/demos/about/whoa.tsx
 var whoa_exports = {};
 __export(whoa_exports, {
   default: () => AboutIndex2
@@ -1511,7 +1548,7 @@ function AboutIndex2() {
   }, "Go back to the ", /* @__PURE__ */ React.createElement("code", null, "/about"), " index."))));
 }
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/preview.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/preview.tsx
 var preview_exports = {};
 __export(preview_exports, {
   default: () => preview_default,
@@ -1550,7 +1587,7 @@ var Preview = () => {
 };
 var preview_default = Preview;
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/$slug.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/$slug.tsx
 var slug_exports = {};
 __export(slug_exports, {
   default: () => PostSlug,
@@ -1670,7 +1707,7 @@ function getHtmlMetadataTags({ metadata: metadata2, post, page, location }) {
   return __spreadValues({}, metadataTags);
 }
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/$slug.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/$slug.tsx
 var headers = ({ loaderHeaders }) => {
   return {
     "Cache-Control": "public, max-age=300, stale-while-revalidate"
@@ -1775,7 +1812,7 @@ query postBySlug($slug: String!) {
   }
 `;
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/index.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/index.tsx
 var routes_exports = {};
 __export(routes_exports, {
   default: () => Index2,
@@ -1936,7 +1973,7 @@ var query2 = `
     }
 `;
 
-// route-module:/Users/spencerbigum/Documents/github/remix-cookie-issue/app/routes/login.tsx
+// route-module:/Users/jacob/git/remix-cookie-test/app/routes/login.tsx
 var login_exports = {};
 __export(login_exports, {
   default: () => login_default,
@@ -2145,6 +2182,14 @@ var routes = {
     index: void 0,
     caseSensitive: void 0,
     module: id_exports3
+  },
+  "routes/api/graphql": {
+    id: "routes/api/graphql",
+    parentId: "root",
+    path: "api/graphql",
+    index: void 0,
+    caseSensitive: void 0,
+    module: graphql_exports
   },
   "routes/api/wpLogin": {
     id: "routes/api/wpLogin",

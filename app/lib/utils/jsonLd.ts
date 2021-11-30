@@ -5,7 +5,7 @@ interface IjsonldWebProps {
   siteTitle: string
 }
 export function jsonLdWebsite(data: IjsonldWebProps): string{
-  const {domain, description, siteTitle} = data
+  const {domain, description, siteTitle} = data || {}
   return `{
     '@context': 'https://schema.org',
     '@graph': [{

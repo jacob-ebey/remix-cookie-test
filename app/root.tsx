@@ -3,33 +3,36 @@ import {
   Link,
   Links,
   LiveReload,
-  Meta, MetaFunction,
+  Meta,
+  MetaFunction,
   Outlet,
   Scripts,
   ScrollRestoration,
-  useCatch, useLoaderData,
-  useLocation, useMatches
-} from 'remix'
+  useCatch,
+  useLoaderData,
+  useLocation,
+  useMatches,
+} from "remix";
 import type { LinksFunction } from "remix";
 
 import deleteMeRemixStyles from "~/styles/demos/remix.css";
 import globalStylesUrl from "~/styles/global.css";
 import darkStylesUrl from "~/styles/dark.css";
 import useSite, { SiteContext } from "./hooks/useSite";
-import { defaultSeoImages, getWPMenu, getWPMetadata } from './lib/wp/site'
-import { getPrimaryMenu } from './lib/wp/nav'
-import { store } from './lib/redux/store'
-import { Provider } from 'react-redux'
-import { RouteData } from '@remix-run/react/routeData'
+import { defaultSeoImages, getWPMenu, getWPMetadata } from "./lib/wp/site";
+import { getPrimaryMenu } from "./lib/wp/nav";
+import { store } from "./lib/redux/store";
+import { Provider } from "react-redux";
+import { RouteData } from "@remix-run/react/routeData";
 import {
   jsonBreadcrumbsList,
   jsonldBlog,
   jsonldImageObject,
   jsonldPerson,
   jsonldWebpage,
-  jsonLdWebsite
-} from './lib/utils/jsonLd'
-import { ReactNode } from 'react'
+  jsonLdWebsite,
+} from "./lib/utils/jsonLd";
+import { ReactNode } from "react";
 import NProgress from "nprogress";
 import nProgressStyles from "nprogress/nprogress.css";
 import { useTransition } from "remix";
@@ -49,7 +52,7 @@ export let links: LinksFunction = () => {
     {
       rel: "stylesheet",
       href: darkStylesUrl,
-      media: "(prefers-color-scheme: dark)"
+      media: "(prefers-color-scheme: dark)",
     },
     { rel: "stylesheet", href: deleteMeRemixStyles },
     { rel: "stylesheet", href: nProgressStyles },
@@ -57,15 +60,15 @@ export let links: LinksFunction = () => {
 };
 
 export let loader: any = async () => {
-  let metadata = getWPMetadata('http://localhost:3000')
+  let metadata = getWPMetadata("http://localhost:3000");
   // let metadata = getWPMetadata('http://localhost:3000')
   return {
     ...getWPMenu(),
     metadata,
-    ENV: {
-      APP_ROOT_URL: 'http://localhost:3000',
-      PUBLIC_WP_API_URL: 'https://etheadless.wpengine.com/graphql/',
-    }
+    ENV: JSON.stringify({
+      APP_ROOT_URL: "http://localhost:3000",
+      PUBLIC_WP_API_URL: "https://etheadless.wpengine.com/graphql/",
+    }),
   };
 };
 
@@ -75,25 +78,27 @@ export let loader: any = async () => {
  * component for your app.
  */
 export default function App() {
-  let {menus, metadata} = useLoaderData<any>();
+  let { menus, metadata, ...rest } = useLoaderData<any>();
 
   // https://sergiodxa.com/articles/use-nprogress-in-a-remix-app
   let transition = useTransition();
   React.useEffect(() => {
     // when the state is idle then we can to complete the progress bar
     if (transition.state === "idle") NProgress.done();
-      // and when it's something else it means it's either submitting a form or
+    // and when it's something else it means it's either submitting a form or
     // waiting for the loaders of the next location so we start it
     else NProgress.start();
   }, [transition.state]);
 
   return (
     // <Provider store={store}>
-    <SiteContext.Provider value={{
-      menu: menus,
-      metadata,
-    }}>
-      <Document>
+    <SiteContext.Provider
+      value={{
+        menu: menus,
+        metadata,
+      }}
+    >
+      <Document data={rest}>
         <Outlet />
       </Document>
     </SiteContext.Provider>
@@ -107,154 +112,189 @@ interface ISelectedMatch {
   data: RouteData;
   handle: any;
 }
-const JsonLd = () => {
-  let {metadata} = useLoaderData<any>();
+const JsonLd = (metadata: any) => {
   let matches = useMatches();
   let location = useLocation();
-  let selectedMatch: undefined | ISelectedMatch = matches.find( match => match.data?.post || match.data?.page)
-  const post: IPost | null = selectedMatch ? selectedMatch?.data?.post : null
-  const page: any = selectedMatch?.data?.page
+  let selectedMatch: undefined | ISelectedMatch = matches.find(
+    (match) => match.data?.post || match.data?.page
+  );
+  const post: IPost | null = selectedMatch ? selectedMatch?.data?.post : null;
+  const page: any = selectedMatch?.data?.page;
   const breadcrumbList = [
     {
       position: 1,
       name: "Home",
       item: metadata.domain,
-    }
-  ]
-  let image = defaultSeoImages.generic
+    },
+  ];
+  let image = defaultSeoImages.generic;
   let jsonWebpageSettings: IjsonldWebpage = {
     title: metadata.title,
     domain: metadata.domain,
     description: metadata.description,
     pageUrl: `${metadata.domain}${location.pathname}`,
-  }
+  };
 
-  if(post){
+  if (post) {
     image = {
-      url: post.featuredImage?.sourceUrl  || '', // need default image
-      altText: post.featuredImage?.altText || '',
+      url: post.featuredImage?.sourceUrl || "", // need default image
+      altText: post.featuredImage?.altText || "",
       width: 1920,
-      height:928
-    }
+      height: 928,
+    };
     jsonWebpageSettings = {
       ...jsonWebpageSettings,
       title: post.seo.title,
       publishTime: post.seo.opengraphPublishedTime,
       modifiedTime: post.seo.opengraphModifiedTime,
       description: post.seo.metaDesc,
-    }
-    breadcrumbList.push(
-      {
-        position: 2,
-        name: `${post.title}`,
-        item: `${metadata.domain}${location.pathname}`
-      }
-    )
+    };
+    breadcrumbList.push({
+      position: 2,
+      name: `${post.title}`,
+      item: `${metadata.domain}${location.pathname}`,
+    });
   }
 
-  if(page){}
-
+  if (page) {
+  }
 
   return (
     <>
       {/*Basic JsonLd Website*/}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: jsonLdWebsite(metadata)}} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdWebsite(metadata) }}
+      />
 
       {/*Basic JsonLd Image*/}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: jsonldImageObject({
-          pageUrl: location.pathname,
-          image
-        })}} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonldImageObject({
+            pageUrl: location.pathname,
+            image,
+          }),
+        }}
+      />
 
       {/*Basic JsonLd Webpage*/}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: jsonldWebpage(jsonWebpageSettings)}} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonldWebpage(jsonWebpageSettings) }}
+      />
 
       {/*Basic JsonLd Person*/}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: jsonldPerson(metadata)}} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonldPerson(metadata) }}
+      />
 
       {/*Basic JsonLd Breadcrumbs*/}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: jsonBreadcrumbsList({
-          domain: metadata.domain,
-          breadcrumbList
-      })}} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonBreadcrumbsList({
+            domain: metadata.domain,
+            breadcrumbList,
+          }),
+        }}
+      />
 
       {/*JsonLd Blog*/}
-      {post && <script type="application/ld+json" dangerouslySetInnerHTML={{__html: jsonldBlog({
-          url: `${metadata.domain}${location.pathname}`,
-          images: [
-            `${post.featuredImage?.sourceUrl}` // need default image
-          ],
-          datePublished: post.seo.opengraphPublishedTime,
-          dateModified: post.seo.opengraphModifiedTime,
-          author: post.author.name,
-          description: post.seo.metaDesc,
-          title: post.seo.title,
-        })
-      }} />}
-
+      {post && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: jsonldBlog({
+              url: `${metadata.domain}${location.pathname}`,
+              images: [
+                `${post.featuredImage?.sourceUrl}`, // need default image
+              ],
+              datePublished: post.seo.opengraphPublishedTime,
+              dateModified: post.seo.opengraphModifiedTime,
+              author: post.author.name,
+              description: post.seo.metaDesc,
+              title: post.seo.title,
+            }),
+          }}
+        />
+      )}
     </>
-  )
-}
+  );
+};
 
 export let meta: MetaFunction = () => {
-  return{
-    title:`Home - Every Tuesday`
-  }
-}
+  return {
+    title: `Home - Every Tuesday`,
+  };
+};
 export function Document({
-                    children,
-                    title
-                  }: {
+  children,
+  title,
+  data,
+}: {
+  data?: any;
   children: React.ReactNode;
   title?: string;
 }) {
-  let data = useLoaderData<any>();
   // console.log('ENV', data)
 
   return (
     <html lang="en">
-    <head>
-      <meta charSet="utf-8" />
-      <meta name="viewport" content="width=device-width,initial-scale=1" />
-      <meta httpEquiv="Content-Type" content="text/html; charset=utf-8"/>
-      <meta name="application-name" content="Every-Tuesday"/>
-      <meta name="facebook-domain-verification" content="49a7ouvzn8x5uhb6gdmg2km5pnbfny"/>
-      <meta name="norton-safeweb-site-verification" content="42o2xv441l6-j8hnbn5bc1wi76o7awsydx8s00-ad8jqokbtj2w3ylsaed7gk2tbd3o-tdzh62ynrlkpicf51voi7pfpa9j61f51405kq0t9z-v896p48l7nlqas6i4l"/>
-      {/*<title>{`Home - ${metadata.title}`}</title>*/}
-      <link rel="preload" href="/fonts/sentinel/Sentinel-SemiboldItal.woff" as="font" type="font/woff2" crossOrigin="anonymous" />
-      <link rel="preload" href="/fonts/sentinel/Sentinel-SemiboldItal.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
-      <Meta />
-      <Links />
-      <JsonLd />
-    </head>
-    <body>
-    {children}
-    <RouteChangeAnnouncement />
-    <ScrollRestoration />
-    <Scripts />
-    {data.ENV && <script
-      dangerouslySetInnerHTML={{
-        __html: `window.ENV = ${JSON.stringify(
-          data.ENV
-          // {
-          //   PUBLIC_WP_API_URL: 'https://etheadless.local/graphql/',
-          //   APP_ROOT_URL: 'http://localhost:3000'
-          // }
-          
-        )}`
-      }}
-    />}
-    {process.env.NODE_ENV === "development" && <LiveReload />}
-    </body>
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="application-name" content="Every-Tuesday" />
+        <meta
+          name="facebook-domain-verification"
+          content="49a7ouvzn8x5uhb6gdmg2km5pnbfny"
+        />
+        <meta
+          name="norton-safeweb-site-verification"
+          content="42o2xv441l6-j8hnbn5bc1wi76o7awsydx8s00-ad8jqokbtj2w3ylsaed7gk2tbd3o-tdzh62ynrlkpicf51voi7pfpa9j61f51405kq0t9z-v896p48l7nlqas6i4l"
+        />
+        {/*<title>{`Home - ${metadata.title}`}</title>*/}
+        <link
+          rel="preload"
+          href="/fonts/sentinel/Sentinel-SemiboldItal.woff"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/sentinel/Sentinel-SemiboldItal.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <Meta />
+        <Links />
+        <JsonLd />
+      </head>
+      <body>
+        {children}
+        <RouteChangeAnnouncement />
+        <ScrollRestoration />
+        <Scripts />
+        {!!data?.ENV && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `window.process = {env: ${data.ENV}};`,
+            }}
+          />
+        )}
+        {process.env.NODE_ENV === "development" && <LiveReload />}
+      </body>
     </html>
   );
 }
 
-
-
 export const PrimaryNav = () => {
-  const {menu} = useSite()
-  const primaryMenu = getPrimaryMenu(menu)
+  const { menu } = useSite();
+  const primaryMenu = getPrimaryMenu(menu);
   return (
     <nav aria-label="Main navigation" className="remix-app__header-nav">
       <ul>
@@ -263,17 +303,20 @@ export const PrimaryNav = () => {
             <li key={menuItem.id}>
               <Link to={menuItem.path}>{menuItem.label}</Link>
             </li>
-          )
+          );
           // return <NavMenuItem key={menuItem.id} dropDownClassNames={styles.navSubMenu} item={menuItem} />;
         })}
       </ul>
     </nav>
-  )
-}
+  );
+};
 interface ILayoutProps {
-  alternateNav?: ReactNode
+  alternateNav?: ReactNode;
 }
-export function Layout({ children, alternateNav }: React.PropsWithChildren<{}> & ILayoutProps) {
+export function Layout({
+  children,
+  alternateNav,
+}: React.PropsWithChildren<{}> & ILayoutProps) {
   return (
     <div className="remix-app">
       <header className="remix-app__header">
@@ -421,7 +464,7 @@ const RouteChangeAnnouncement = React.memo(() => {
         position: "absolute",
         width: "1px",
         whiteSpace: "nowrap",
-        wordWrap: "normal"
+        wordWrap: "normal",
       }}
     >
       {innerHtml}
